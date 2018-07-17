@@ -1,0 +1,2 @@
+add_subdirectory(spectacle)
+add_subdirectory(libspectacle)
