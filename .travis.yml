@@ -4,8 +4,8 @@ services:
     - docker
 
 before_install:
-    - docker pull redrifle/spectacle:latest
-    - docker run -itd --name spectacle redrifle/eternity
+    - docker pull ezechiel/spectacle:latest
+    - docker run -itd --name spectacle ezechiel/spectacle
 
 script:
     - docker exec spectacle cmake -DBUILD_TESTING=ON -H/spectacle -B/build
