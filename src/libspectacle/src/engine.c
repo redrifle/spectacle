@@ -35,12 +35,12 @@ GLuint sp_vao_new()
 
 GLuint sp_buffer_new(GLenum target, GLvoid *data, size_t size)
 {
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(target, vbo);
+    GLuint bo;
+    glGenBuffers(1, &bo);
+    glBindBuffer(target, bo);
     glBufferData(target, size, data, GL_STATIC_DRAW);
 
-    return vbo;
+    return bo;
 }
 
 int sp_shader_compile(GLuint shader, GLuint program)
@@ -114,17 +114,15 @@ sp_state *sp_state_init()
     }
 
     GLfloat verts[] = {
-        -0.5f,  0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.0f, 1.0f,
-         0.5f,  0.5f, 0.0f, 1.0f,
-         0.5f, -0.5f, 0.0f, 1.0f
+       -1.0f, -1.0f,  -1.0f, 1.0f,
+        0.0f,  1.0f,  -1.0f, 1.0f,
+        1.0f, -1.0f,  -1.0f, 1.0f
     };
 
     GLfloat color[] = {
         1.0f, 1.0f, 1.0f, 1.0f,
-        0.0f, 0.5f, 0.0f, 1.0f,
         1.0f, 1.0f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.0f, 1.0f
+        1.0f, 1.0f, 1.0f, 1.0f
     };
 
     state->verts_size = sizeof(verts);
@@ -156,27 +154,23 @@ void update(sp_state *state)
     glfwPollEvents();
 
     GLfloat time = glfwGetTime();
-/*
-    state->m_stack->view.data[5] = cos(time);
-    state->m_stack->view.data[6] = -sin(time);
-    state->m_stack->view.data[9] = sin(time);
-    state->m_stack->view.data[10] = cos(time);
-*/
-    state->color[0] = cos(time);
-    state->color[1] = sin(time);
-    state->color[2] = tan(time);
+
+    state->color[5] = cos(time);
+    state->color[6] = sin(time);
+    state->color[7] = tan(time);
+
 
     if (glfwGetKey(state->window, GLFW_KEY_W) == GLFW_PRESS)
-        state->m_stack->view.data[11] += 0.01f;
+        state->m_stack->model.data[11] += 0.01f;
 
     if (glfwGetKey(state->window, GLFW_KEY_A) == GLFW_PRESS)
-        state->m_stack->view.data[3] -= 0.01f;
+        state->m_stack->model.data[12] += 0.01f;
 
     if (glfwGetKey(state->window, GLFW_KEY_S) == GLFW_PRESS)
-        state->m_stack->view.data[11] -= 0.01f;
+        state->m_stack->model.data[11] -= 0.01f;
 
     if (glfwGetKey(state->window, GLFW_KEY_D) == GLFW_PRESS)
-        state->m_stack->view.data[3] += 0.01f;
+        state->m_stack->model.data[12] -= 0.01f;
 
     glBufferData(
             GL_ARRAY_BUFFER,
@@ -212,7 +206,7 @@ void update(sp_state *state)
 void render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 int sp_engine_run(sp_state *state)
@@ -235,7 +229,7 @@ int sp_engine_run(sp_state *state)
         "in vec4 color;"
         "out vec4 frag_color;"
         "uniform mat4 model, view, proj;"
-        "void main() { gl_Position = vcoords * model * view * proj;"
+        "void main() { gl_Position = proj * view * model * vcoords;"
         "frag_color = color; }";
 
     const GLchar *f_shader_source =

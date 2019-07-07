@@ -78,7 +78,6 @@ void sp_engine_free(sp_state *state)
     sp_state_free(state);
 }
 
-/*
 #ifdef __GNUC__
 __attribute__((format(__printf__, 1, 2)))
 #endif
@@ -95,7 +94,7 @@ char* sp_asprintf(const char *fmt, ...)
     if (len < 0)
         return NULL;
 
-    p = safe_malloc(len + 1);
+    p = sp_malloc(len + 1);
 
     va_start(ap, fmt);
     len = vsnprintf(p, len + 1, fmt, ap);
@@ -106,4 +105,3 @@ char* sp_asprintf(const char *fmt, ...)
 
     return p;
 }
-*/
